@@ -62,6 +62,7 @@ public final class Main {
 
     // TODO: Add your REPL here!
     try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+      MathBot mathBot = new MathBot();
       String input;
       while ((input = br.readLine()) != null) {
         try {
@@ -70,6 +71,15 @@ public final class Main {
           System.out.println(arguments[0]);
           // TODO: complete your REPL by adding commands for addition "add" and subtraction
           //  "subtract"
+
+          if (arguments[0].equals("add")){
+            System.out.println(mathBot.add(Double.parseDouble(arguments[1]),
+                    Double.parseDouble(arguments[2])));
+          }
+          else if (arguments[0].equals("subtract")){
+            System.out.println(mathBot.subtract(Double.parseDouble(arguments[1]),
+                    Double.parseDouble(arguments[2])));
+          }
         } catch (Exception e) {
           // e.printStackTrace();
           System.out.println("ERROR: We couldn't process your input");
