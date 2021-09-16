@@ -1,5 +1,8 @@
 package edu.brown.cs.student.main;
 
+/**
+ * The MathBot class, which handles addition and subtraction.
+ */
 public class MathBot {
 
   /**

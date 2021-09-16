@@ -2,11 +2,19 @@ package edu.brown.cs.student.main;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -28,6 +36,7 @@ public final class Main {
 
   // use port 4567 by default when running server
   private static final int DEFAULT_PORT = 4567;
+  private ArrayList<String[]> stars;
 
   /**
    * The initial method called when execution begins.
@@ -67,14 +76,17 @@ public final class Main {
         try {
           input = input.trim();
           String[] arguments = input.split(" ");
-          System.out.println(arguments[0]);
 
           if (arguments[0].equals("add")) {
             System.out.println(mathBot.add(Double.parseDouble(arguments[1]),
-                    Double.parseDouble(arguments[2])));
+                Double.parseDouble(arguments[2])));
           } else if (arguments[0].equals("subtract")) {
             System.out.println(mathBot.subtract(Double.parseDouble(arguments[1]),
-                    Double.parseDouble(arguments[2])));
+                Double.parseDouble(arguments[2])));
+          } else if (arguments[0].equals("stars")) {
+            starsHelper(arguments);
+          } else if (arguments[0].equals("naive_neighbors")) {
+            naiveNeighborsHelper(arguments);
           }
         } catch (Exception e) {
           // e.printStackTrace();
@@ -84,6 +96,59 @@ public final class Main {
     } catch (Exception e) {
       e.printStackTrace();
       System.out.println("ERROR: Invalid input for REPL");
+    }
+
+  }
+
+  private void starsHelper(String[] arguments) {
+    if (arguments.length != 2) {
+      System.out.println("ERROR: Invalid number of arguments for stars");
+      System.out.println("Usage: stars <filepath>");
+      return;
+    }
+
+    stars = new ArrayList<>();
+
+    try {
+      File file = new File(arguments[1]);
+      Scanner scanner = new Scanner(file);
+
+      while (scanner.hasNextLine()) {
+        //TODO fix this
+        String[] starData = scanner.nextLine().split(",");
+        if (starData.length < 4) {
+          System.out.println("ERROR: missing star data");
+        } else if (!starData[0].equals("StarID")) {
+          stars.add(starData);
+        }
+      }
+
+      for (String[] star: stars) {
+        System.out.println(Arrays.toString(star));
+      }
+
+    } catch (FileNotFoundException e) {
+      System.out.println("ERROR: File not found");
+    }
+
+  }
+
+  private void naiveNeighborsHelper(String[] arguments) {
+    if (arguments.length != 5 && arguments.length != 3) {
+      System.out.println(Arrays.toString(arguments));
+      System.out.println("ERROR: Invalid number of arguments for naive_neighbors");
+      System.out.println("Usage: naive_neighbors <k> <x> <y> <z>");
+      System.out.println("naive_neighbors <k> <\"name\">");
+    }
+
+    if (arguments.length == 3) {
+      Optional<String[]> starData =
+          stars.stream().filter(a -> a[1].equals(arguments[2])).findFirst();
+      try {
+        System.out.println(Arrays.toString(starData.orElseThrow()));
+      } catch (NoSuchElementException e) {
+        System.out.println("??");
+      }
     }
 
   }

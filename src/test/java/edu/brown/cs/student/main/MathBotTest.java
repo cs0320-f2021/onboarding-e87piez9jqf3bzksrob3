@@ -28,4 +28,22 @@ public class MathBotTest {
   }
 
   // TODO: add more unit tests of your own
+
+  @Test
+  public void testIntOperations(){
+    MathBot mathDude = new MathBot();
+    double addOutput = mathDude.add(20, 30);
+    assertEquals(50, addOutput, 0.01);
+    double subOutput = mathDude.subtract(20, 30);
+    assertEquals(-10, subOutput, 0.01);
+  }
+
+  @Test
+  public void testDoubleOperations(){
+    MathBot mathDude = new MathBot();
+    double addOutput = mathDude.add(1.0, 0.33);
+    assertEquals(1.33, addOutput, 0.01);
+    double subOutput = mathDude.subtract(1, 0.33);
+    assertEquals(0.67, subOutput, 0.01);
+  }
 }
