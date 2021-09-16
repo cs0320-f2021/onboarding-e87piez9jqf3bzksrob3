@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableMap;
@@ -75,7 +76,22 @@ public final class Main {
       while ((input = br.readLine()) != null) {
         try {
           input = input.trim();
-          String[] arguments = input.split(" ");
+          List<String> matchList = new ArrayList<>();
+          Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
+          Matcher regexMatcher = regex.matcher(input);
+          while (regexMatcher.find()) {
+            if (regexMatcher.group(1) != null) {
+              // Add double-quoted string without the quotes
+              matchList.add(regexMatcher.group(1));
+            } else if (regexMatcher.group(2) != null) {
+              // Add single-quoted string without the quotes
+              matchList.add(regexMatcher.group(2));
+            } else {
+              // Add unquoted word
+              matchList.add(regexMatcher.group());
+            }
+          }
+          String[] arguments = matchList.toArray(new String[0]);
 
           if (arguments[0].equals("add")) {
             System.out.println(mathBot.add(Double.parseDouble(arguments[1]),
@@ -84,9 +100,9 @@ public final class Main {
             System.out.println(mathBot.subtract(Double.parseDouble(arguments[1]),
                 Double.parseDouble(arguments[2])));
           } else if (arguments[0].equals("stars")) {
-            starsHelper(arguments);
+            this.starsHelper(arguments);
           } else if (arguments[0].equals("naive_neighbors")) {
-            naiveNeighborsHelper(arguments);
+            this.naiveNeighborsHelper(arguments);
           }
         } catch (Exception e) {
           // e.printStackTrace();
@@ -142,8 +158,9 @@ public final class Main {
     }
 
     if (arguments.length == 3) {
+      String starName = arguments[2].replace("\"", "");
       Optional<String[]> starData =
-          stars.stream().filter(a -> a[1].equals(arguments[2])).findFirst();
+          stars.stream().filter(a -> a[1].equals(starName)).findFirst();
       try {
         System.out.println(Arrays.toString(starData.orElseThrow()));
       } catch (NoSuchElementException e) {
