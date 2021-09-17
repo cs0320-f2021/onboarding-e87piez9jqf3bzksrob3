@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -37,7 +38,7 @@ public final class Main {
 
   // use port 4567 by default when running server
   private static final int DEFAULT_PORT = 4567;
-  private ArrayList<String[]> stars;
+  private ArrayList<ArrayList<String>> stars;
 
   /**
    * The initial method called when execution begins.
@@ -135,12 +136,12 @@ public final class Main {
         if (starData.length < 4) {
           System.out.println("ERROR: missing star data");
         } else if (!starData[0].equals("StarID")) {
-          stars.add(starData);
+          stars.add(new ArrayList<>(Arrays.asList(starData)));
         }
       }
 
-      for (String[] star: stars) {
-        System.out.println(Arrays.toString(star));
+      for (ArrayList<String> star: stars) {
+        System.out.println(star);
       }
 
     } catch (FileNotFoundException e) {
@@ -159,15 +160,37 @@ public final class Main {
 
     if (arguments.length == 3) {
       String starName = arguments[2].replace("\"", "");
-      Optional<String[]> starData =
-          stars.stream().filter(a -> a[1].equals(starName)).findFirst();
+      Optional<ArrayList<String>> starData =
+          stars.stream().filter(a -> a.get(1).equals(starName)).findFirst();
       try {
-        System.out.println(Arrays.toString(starData.orElseThrow()));
+        System.out.println(starData.orElseThrow());
+        distanceMaker(starData.orElseThrow());
       } catch (NoSuchElementException e) {
         System.out.println("??");
       }
     }
 
+  }
+
+  private void distanceMaker(ArrayList<String> starData) {
+    double baseX = Double.parseDouble(starData.get(2)), baseY = Double.parseDouble(starData.get(3)),
+        baseZ = Double.parseDouble(starData.get(4));
+
+    for (ArrayList<String> star: stars) {
+      double currentX = Double.parseDouble(star.get(2)), currentY =
+          Double.parseDouble(star.get(3)),
+          currentZ = Double.parseDouble(star.get(4));
+
+      double distance =
+          Math.sqrt(Math.pow(baseX - currentX, 2)
+              + Math.pow(baseY - currentY, 2)
+              + Math.pow(baseZ - currentZ, 2));
+
+      star.add(String.valueOf(distance));
+    }
+ // stars /home/usodhi/cs32/onboarding-e87piez9jqf3bzksrob3/data/stars/ten-star.csv
+    stars.sort(Comparator.comparing(s -> s.get(5))); //Double.parseDouble(s1.get(5)) < Double
+    System.out.println(stars);
   }
 
   private static FreeMarkerEngine createEngine() {
