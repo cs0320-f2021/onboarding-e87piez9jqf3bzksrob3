@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.checkerframework.checker.units.qual.A;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.Request;
@@ -106,7 +108,7 @@ public final class Main {
             this.naiveNeighborsHelper(arguments);
           }
         } catch (Exception e) {
-          // e.printStackTrace();
+          e.printStackTrace();
           System.out.println("ERROR: We couldn't process your input");
         }
       }
@@ -136,7 +138,9 @@ public final class Main {
         if (starData.length < 4) {
           System.out.println("ERROR: missing star data");
         } else if (!starData[0].equals("StarID")) {
-          stars.add(new ArrayList<>(Arrays.asList(starData)));
+          ArrayList<String> star = new ArrayList<>(Arrays.asList(starData));
+          star.add("0");
+          stars.add(star);
         }
       }
 
@@ -163,16 +167,20 @@ public final class Main {
       Optional<ArrayList<String>> starData =
           stars.stream().filter(a -> a.get(1).equals(starName)).findFirst();
       try {
-        System.out.println(starData.orElseThrow());
-        distanceMaker(starData.orElseThrow());
+        distanceMaker(starData.orElseThrow(), Integer.parseInt(arguments[1]));
       } catch (NoSuchElementException e) {
         System.out.println("??");
       }
+    } else {
+      distanceMaker(new ArrayList<>(Arrays.asList("NULL", "NULL", arguments[2],
+          arguments[3], arguments[4], "0")), Integer.parseInt(arguments[1]));
     }
 
   }
 
-  private void distanceMaker(ArrayList<String> starData) {
+  private void distanceMaker(ArrayList<String> starData, int k) {
+    int initialSize = stars.size();
+    stars.remove(starData);
     double baseX = Double.parseDouble(starData.get(2)), baseY = Double.parseDouble(starData.get(3)),
         baseZ = Double.parseDouble(starData.get(4));
 
@@ -186,11 +194,42 @@ public final class Main {
               + Math.pow(baseY - currentY, 2)
               + Math.pow(baseZ - currentZ, 2));
 
-      star.add(String.valueOf(distance));
+//      star.add(String.valueOf(distance));
+      star.set(5, String.valueOf(distance));
     }
  // stars /home/usodhi/cs32/onboarding-e87piez9jqf3bzksrob3/data/stars/ten-star.csv
-    stars.sort(Comparator.comparing(s -> s.get(5))); //Double.parseDouble(s1.get(5)) < Double
-    System.out.println(stars);
+    stars.sort(Comparator.comparing(s -> Double.parseDouble(s.get(5))));
+    kStars(k);
+    if (initialSize > stars.size()) {
+      stars.add(starData);
+    }
+  }
+
+  private void kStars(int k) {
+    try {
+      ArrayList<String> star = stars.get(k);
+      ArrayList<ArrayList<String>> LTstars = new ArrayList<>();
+      ArrayList<ArrayList<String>> EQstars = new ArrayList<>();
+      stars.forEach(s -> {
+        if (Double.parseDouble(s.get(5)) < Double.parseDouble(star.get(5))) {
+          LTstars.add(s);
+        } else if (s.get(5).equals(star.get(5))) {
+          EQstars.add(s);
+        }
+      });
+
+      int requiredNumber = k - LTstars.size();
+
+      Random rand = new Random();
+      for (int i = 0; i < requiredNumber  ; i++) {
+        int randInt = rand.nextInt(EQstars.size());
+        LTstars.add(EQstars.remove(randInt));
+      }
+
+      System.out.println(LTstars);
+    } catch (IndexOutOfBoundsException e) {
+      System.out.println(stars);
+    }
   }
 
   private static FreeMarkerEngine createEngine() {
