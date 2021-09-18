@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableMap;
 import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import org.checkerframework.checker.units.qual.A;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.Request;
@@ -96,16 +95,24 @@ public final class Main {
           }
           String[] arguments = matchList.toArray(new String[0]);
 
-          if (arguments[0].equals("add")) {
-            System.out.println(mathBot.add(Double.parseDouble(arguments[1]),
-                Double.parseDouble(arguments[2])));
-          } else if (arguments[0].equals("subtract")) {
-            System.out.println(mathBot.subtract(Double.parseDouble(arguments[1]),
-                Double.parseDouble(arguments[2])));
-          } else if (arguments[0].equals("stars")) {
-            this.starsHelper(arguments);
-          } else if (arguments[0].equals("naive_neighbors")) {
-            this.naiveNeighborsHelper(arguments);
+          switch (arguments[0]) {
+            case "add":
+              System.out.println(mathBot.add(Double.parseDouble(arguments[1]),
+                  Double.parseDouble(arguments[2])));
+              break;
+            case "subtract":
+              System.out.println(mathBot.subtract(Double.parseDouble(arguments[1]),
+                  Double.parseDouble(arguments[2])));
+              break;
+            case "stars":
+              starsHelper(arguments);
+              break;
+            case "naive_neighbors":
+              naiveNeighborsHelper(arguments);
+              break;
+            default:
+              System.out.println("ERROR: invalid command.");
+              System.out.println("Valid commands: stars, naive_neighbors");
           }
         } catch (Exception e) {
           e.printStackTrace();
@@ -133,25 +140,48 @@ public final class Main {
       Scanner scanner = new Scanner(file);
 
       while (scanner.hasNextLine()) {
-        //TODO fix this
         String[] starData = scanner.nextLine().split(",");
-        if (starData.length < 4) {
-          System.out.println("ERROR: missing star data");
-        } else if (!starData[0].equals("StarID")) {
+        if (!starData[0].equals("StarID")) {
+          if (starDataErrorHelper(starData)) {
+            continue;
+          }
           ArrayList<String> star = new ArrayList<>(Arrays.asList(starData));
           star.add("0");
           stars.add(star);
         }
       }
-
-      for (ArrayList<String> star: stars) {
-        System.out.println(star);
-      }
-
+      System.out.println("Read " + stars.size() + " stars from " + arguments[1]);
     } catch (FileNotFoundException e) {
       System.out.println("ERROR: File not found");
     }
 
+  }
+
+  private boolean starDataErrorHelper(String[] starData) {
+    if (starData[0].equals("")) {
+      System.out.println("Error: missing StarID. Skipping this star.");
+      return true;
+    } else {
+      try {
+        Double.parseDouble(starData[2]);
+      } catch (NumberFormatException e) {
+        System.out.println("Error: X value non-numeric. Skipping this star.");
+        return true;
+      }
+      try {
+        Double.parseDouble(starData[3]);
+      } catch (NumberFormatException e) {
+        System.out.println("Error: Y value non-numeric. Skipping this star.");
+        return true;
+      }
+      try {
+        Double.parseDouble(starData[4]);
+      } catch (NumberFormatException e) {
+        System.out.println("Error: Z value non-numeric. Skipping this star.");
+        return true;
+      }
+    }
+    return false;
   }
 
   private void naiveNeighborsHelper(String[] arguments) {
@@ -160,6 +190,14 @@ public final class Main {
       System.out.println("ERROR: Invalid number of arguments for naive_neighbors");
       System.out.println("Usage: naive_neighbors <k> <x> <y> <z>");
       System.out.println("naive_neighbors <k> <\"name\">");
+      return;
+    }
+
+    if (stars.isEmpty()) {
+      System.out.println("You must run the stars command before running the naive_neighbors "
+          + "command!");
+      System.out.println("Usage: stars <filepath>");
+      return;
     }
 
     if (arguments.length == 3) {
@@ -206,29 +244,28 @@ public final class Main {
   }
 
   private void kStars(int k) {
-    try {
-      ArrayList<String> star = stars.get(k);
-      ArrayList<ArrayList<String>> LTstars = new ArrayList<>();
-      ArrayList<ArrayList<String>> EQstars = new ArrayList<>();
+    if (stars.size() < k) {
+      stars.forEach(s -> System.out.println(s.get(0)));
+    } else if (k > 0) {
+      ArrayList<String> star = stars.get(k - 1);
+      ArrayList<String> lessThanStars = new ArrayList<>();
+      ArrayList<String> equalStars = new ArrayList<>();
       stars.forEach(s -> {
         if (Double.parseDouble(s.get(5)) < Double.parseDouble(star.get(5))) {
-          LTstars.add(s);
+          lessThanStars.add(s.get(0));
         } else if (s.get(5).equals(star.get(5))) {
-          EQstars.add(s);
+          equalStars.add(s.get(0));
         }
       });
 
-      int requiredNumber = k - LTstars.size();
+      int requiredNumber = k - lessThanStars.size();
 
       Random rand = new Random();
-      for (int i = 0; i < requiredNumber  ; i++) {
-        int randInt = rand.nextInt(EQstars.size());
-        LTstars.add(EQstars.remove(randInt));
+      for (int i = 0; i < requiredNumber; i++) {
+        int randInt = rand.nextInt(equalStars.size());
+        lessThanStars.add(equalStars.remove(randInt));
       }
-
-      System.out.println(LTstars);
-    } catch (IndexOutOfBoundsException e) {
-      System.out.println(stars);
+      lessThanStars.forEach(System.out::println);
     }
   }
 

@@ -1,5 +1,6 @@
 INPUT
 stars 
 OUTPUT
-ERROR:
+ERROR: Invalid number of arguments for stars
+Usage: stars <filepath>
 END

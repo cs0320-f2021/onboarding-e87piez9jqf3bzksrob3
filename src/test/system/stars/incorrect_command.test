@@ -3,5 +3,6 @@ stars data/stars/ten-star.csv
 naive_neighboar 1 "Proxima Centauri"
 OUTPUT
 Read 10 stars from data/stars/ten-star.csv
-ERROR:
+ERROR: invalid command.
+Valid commands: stars, naive_neighbors
 END
