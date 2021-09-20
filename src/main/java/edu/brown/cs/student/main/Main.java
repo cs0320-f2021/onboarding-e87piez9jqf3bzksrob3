@@ -284,24 +284,24 @@ public final class Main {
       stars.forEach(s -> System.out.println(s.get(0)));
     } else if (k > 0) {
       ArrayList<String> star = stars.get(k - 1);
-      ArrayList<String> lessThanStars = new ArrayList<>();
+      ArrayList<String> kStars = new ArrayList<>();
       ArrayList<String> equalStars = new ArrayList<>();
       stars.forEach(s -> {
         if (Double.parseDouble(s.get(5)) < Double.parseDouble(star.get(5))) {
-          lessThanStars.add(s.get(0));
+          kStars.add(s.get(0));
         } else if (s.get(5).equals(star.get(5))) {
           equalStars.add(s.get(0));
         }
       });
 
-      int requiredNumber = k - lessThanStars.size();
+      int requiredNumber = k - kStars.size();
 
       Random rand = new Random();
       for (int i = 0; i < requiredNumber; i++) {
         int randInt = rand.nextInt(equalStars.size());
-        lessThanStars.add(equalStars.remove(randInt)); // adds randomly selected star to k stars
+        kStars.add(equalStars.remove(randInt)); // adds randomly selected star to k stars
       }
-      lessThanStars.forEach(System.out::println);
+      kStars.forEach(System.out::println);
     }
   }
 
