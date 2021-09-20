@@ -138,7 +138,7 @@ public final class Main {
       return;
     }
 
-    stars = new ArrayList<>();
+    stars = new ArrayList<>(); // creates new ArrayList whenever the stars command is used
 
     try {
       File file = new File(arguments[1]);
@@ -147,9 +147,10 @@ public final class Main {
       while (scanner.hasNextLine()) {
         String[] starData = scanner.nextLine().split(",");
         if (!starData[0].equals("StarID")) {
-          if (starDataErrorHelper(starData)) {
+          if (starDataErrorHelper(starData)) { // checks for incorrect data format in each line
             continue;
           }
+          // converts star array data to an ArrayList
           ArrayList<String> star = new ArrayList<>(Arrays.asList(starData));
           star.add("0");
           stars.add(star);
@@ -213,14 +214,14 @@ public final class Main {
       return;
     }
 
-    if (stars.isEmpty()) {
+    if (stars.isEmpty()) { // the stars command needs to be run before naive_neighbors
       System.out.println("You must run the stars command before running the naive_neighbors "
           + "command!");
       System.out.println("Usage: stars <filepath>");
       return;
     }
 
-    if (arguments.length == 3) {
+    if (arguments.length == 3) { // if the command is of the format stars <k> <starName>
       String starName = arguments[2].replace("\"", "");
       Optional<ArrayList<String>> starData =
           stars.stream().filter(a -> a.get(1).equals(starName)).findFirst();
@@ -229,7 +230,8 @@ public final class Main {
       } catch (NoSuchElementException e) {
         System.out.println("??");
       }
-    } else {
+    } else { // if the command is of the format stars <k> <x> <y> <z>
+      // creates a new ArrayList with the location data, mimicking a star
       distanceMaker(new ArrayList<>(Arrays.asList("NULL", "NULL", arguments[2],
           arguments[3], arguments[4], "0")), Integer.parseInt(arguments[1]));
     }
@@ -246,6 +248,7 @@ public final class Main {
    */
   private void distanceMaker(ArrayList<String> starData, int k) {
     int initialSize = stars.size();
+    // removes either the star passed in or the simulated star so it doesn't show up in the k stars
     stars.remove(starData);
     double baseX = Double.parseDouble(starData.get(2)), baseY = Double.parseDouble(starData.get(3)),
         baseZ = Double.parseDouble(starData.get(4));
@@ -263,9 +266,10 @@ public final class Main {
       star.set(5, String.valueOf(distance));
     }
 
+    // sorts the ArrayList of stars based on the numeric value of the distance
     stars.sort(Comparator.comparing(s -> Double.parseDouble(s.get(5))));
-    kStars(k);
-    if (initialSize > stars.size()) {
+    kStars(k); // calculates, prints nearest k stars
+    if (initialSize > stars.size()) { // if we removed a star earlier, add it back
       stars.add(starData);
     }
   }
@@ -276,7 +280,7 @@ public final class Main {
    * @param k the number of star IDs to be printed
    */
   private void kStars(int k) {
-    if (stars.size() < k) {
+    if (stars.size() < k) { // if we want fewer stars than we have, print them all
       stars.forEach(s -> System.out.println(s.get(0)));
     } else if (k > 0) {
       ArrayList<String> star = stars.get(k - 1);
@@ -295,7 +299,7 @@ public final class Main {
       Random rand = new Random();
       for (int i = 0; i < requiredNumber; i++) {
         int randInt = rand.nextInt(equalStars.size());
-        lessThanStars.add(equalStars.remove(randInt));
+        lessThanStars.add(equalStars.remove(randInt)); // adds randomly selected star to k stars
       }
       lessThanStars.forEach(System.out::println);
     }
