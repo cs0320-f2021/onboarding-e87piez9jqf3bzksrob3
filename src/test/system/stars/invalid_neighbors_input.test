@@ -1,0 +1,9 @@
+INPUT
+stars data/stars/ten-star.csv
+naive_neighbors 1 "Sol" whoops
+OUTPUT
+Read 10 stars from data/stars/ten-star.csv
+ERROR: Invalid number of arguments for naive_neighbors
+naive_neighbors <k> <"name">
+Usage: naive_neighbors <k> <x> <y> <z>
+END

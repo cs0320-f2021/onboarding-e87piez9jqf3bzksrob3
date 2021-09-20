@@ -3,5 +3,6 @@ ARGS
 INPUT
 add 3
 OUTPUT
-ERROR:
+ERROR: invalid format for add
+Correct usage: add <num1> <num2>
 END

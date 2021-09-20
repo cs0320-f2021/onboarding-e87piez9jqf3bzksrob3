@@ -46,4 +46,22 @@ public class MathBotTest {
     double subOutput = mathDude.subtract(1, 0.33);
     assertEquals(0.67, subOutput, 0.01);
   }
+
+  @Test
+  public void testNesting(){
+    MathBot mathDude = new MathBot();
+    double result = mathDude.add(105, mathDude.subtract(100, 5));
+    assertEquals(result, 200, 0.01);
+    result = mathDude.subtract(105, mathDude.add(100, 5));
+    assertEquals(result, 0, 0.01);
+  }
+
+  @Test
+  public void testMultiplicationAndDivision(){
+    MathBot mathDude = new MathBot();
+    double result = mathDude.add(mathDude.add(20, 20), mathDude.add(20, 20));
+    assertEquals(result, 4 * 20, 0.01);
+    result = mathDude.subtract(mathDude.add(25, 5), mathDude.add(5, 5));
+    assertEquals(result, 80/4, 0.01);
+  }
 }

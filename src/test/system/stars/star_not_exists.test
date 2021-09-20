@@ -1,0 +1,7 @@
+INPUT
+stars data/stars/one-star.csv
+naive_neighbors 1 "nonexistent"
+OUTPUT
+Read 1 stars from data/stars/one-star.csv
+ERROR: star passed in does not exist
+END

@@ -97,12 +97,22 @@ public final class Main {
 
           switch (arguments[0]) {
             case "add":
-              System.out.println(mathBot.add(Double.parseDouble(arguments[1]),
-                  Double.parseDouble(arguments[2])));
+              try {
+                System.out.println(mathBot.add(Double.parseDouble(arguments[1]),
+                    Double.parseDouble(arguments[2])));
+              } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                System.out.println("ERROR: invalid usage of add");
+                System.out.println("Correct usage: add <num1> <num2>");
+              }
               break;
             case "subtract":
-              System.out.println(mathBot.subtract(Double.parseDouble(arguments[1]),
-                  Double.parseDouble(arguments[2])));
+              try {
+                System.out.println(mathBot.subtract(Double.parseDouble(arguments[1]),
+                    Double.parseDouble(arguments[2])));
+              } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                System.out.println("ERROR: invalid usage of subtract");
+                System.out.println("Correct usage: subtract <num1> <num2>");
+              }
               break;
             case "stars":
               starsHelper(arguments);
@@ -207,15 +217,15 @@ public final class Main {
    */
   private void naiveNeighborsHelper(String[] arguments) {
     if (arguments.length != 5 && arguments.length != 3) {
-      System.out.println(Arrays.toString(arguments));
       System.out.println("ERROR: Invalid number of arguments for naive_neighbors");
-      System.out.println("Usage: naive_neighbors <k> <x> <y> <z>");
       System.out.println("naive_neighbors <k> <\"name\">");
+      System.out.println("Usage: naive_neighbors <k> <x> <y> <z>");
       return;
     }
 
-    if (stars.isEmpty()) { // the stars command needs to be run before naive_neighbors
-      System.out.println("You must run the stars command before running the naive_neighbors "
+    if (stars == null || stars.isEmpty()) { // the stars command needs to be run before
+      // naive_neighbors
+      System.out.println("ERROR: You must run the stars command before running the naive_neighbors "
           + "command!");
       System.out.println("Usage: stars <filepath>");
       return;
@@ -228,7 +238,7 @@ public final class Main {
       try {
         distanceMaker(starData.orElseThrow(), Integer.parseInt(arguments[1]));
       } catch (NoSuchElementException e) {
-        System.out.println("??");
+        System.out.println("ERROR: star passed in does not exist");
       }
     } else { // if the command is of the format stars <k> <x> <y> <z>
       // creates a new ArrayList with the location data, mimicking a star

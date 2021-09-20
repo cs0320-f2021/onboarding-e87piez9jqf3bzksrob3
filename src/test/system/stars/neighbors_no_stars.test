@@ -1,0 +1,6 @@
+INPUT
+naive_neighbors 1 0 0 0
+OUTPUT
+ERROR: You must run the stars command before running the naive_neighbors command!
+Usage: stars <filepath>
+END
