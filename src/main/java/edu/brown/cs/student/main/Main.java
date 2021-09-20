@@ -115,7 +115,6 @@ public final class Main {
               System.out.println("Valid commands: stars, naive_neighbors");
           }
         } catch (Exception e) {
-          e.printStackTrace();
           System.out.println("ERROR: We couldn't process your input");
         }
       }
@@ -126,6 +125,12 @@ public final class Main {
 
   }
 
+  /**
+   * Helper method called when the user runs the stars command.
+   * Creates a new ArrayList of stars, attempts to open the file passed in, loads the stars into
+   * the ArrayList and initalises their distances, and prints a confirmation message
+   * @param arguments the array of command line arguments
+   */
   private void starsHelper(String[] arguments) {
     if (arguments.length != 2) {
       System.out.println("ERROR: Invalid number of arguments for stars");
@@ -157,6 +162,14 @@ public final class Main {
 
   }
 
+  /**
+   * Helper method that checks for errors in a line of the input file.
+   * It checks if the star data is in the correct format and prints an appropriate error message
+   * if not
+   * @param starData a line of the input file in the format:
+   *                 StarID, Star Name, X, Y, Z
+   * @return true if there's an error, false otherwise
+   */
   private boolean starDataErrorHelper(String[] starData) {
     if (starData[0].equals("")) {
       System.out.println("Error: missing StarID. Skipping this star.");
@@ -184,6 +197,13 @@ public final class Main {
     return false;
   }
 
+  /**
+   * Private helper method called when the user runs the naive_neighbors command.
+   * Checks for command validity, printing an appropriate error message if invalid.
+   * Prints an appropriate error message if the naive_neighbors command is run before the star
+   * command.
+   * @param arguments the list of command line arguments
+   */
   private void naiveNeighborsHelper(String[] arguments) {
     if (arguments.length != 5 && arguments.length != 3) {
       System.out.println(Arrays.toString(arguments));
@@ -216,6 +236,14 @@ public final class Main {
 
   }
 
+  /**
+   * Helper method that calculates the distance for all stars relative to a single star/location.
+   * Calls the kStars method to calculate and print the nearest k stars.
+   * @param starData the star or set of coordinates relative to which distance for every other
+   *                 star is to be calculated
+   * @param k the number of stars whose IDs to print, passed as a parameter to the kStars method,
+   *         which prints the stars
+   */
   private void distanceMaker(ArrayList<String> starData, int k) {
     int initialSize = stars.size();
     stars.remove(starData);
@@ -232,10 +260,9 @@ public final class Main {
               + Math.pow(baseY - currentY, 2)
               + Math.pow(baseZ - currentZ, 2));
 
-//      star.add(String.valueOf(distance));
       star.set(5, String.valueOf(distance));
     }
- // stars /home/usodhi/cs32/onboarding-e87piez9jqf3bzksrob3/data/stars/ten-star.csv
+
     stars.sort(Comparator.comparing(s -> Double.parseDouble(s.get(5))));
     kStars(k);
     if (initialSize > stars.size()) {
@@ -243,6 +270,11 @@ public final class Main {
     }
   }
 
+  /**
+   * Helper method that determines which stars to print, including randomisation of equidistant
+   * stars, and prints the star IDs
+   * @param k the number of star IDs to be printed
+   */
   private void kStars(int k) {
     if (stars.size() < k) {
       stars.forEach(s -> System.out.println(s.get(0)));
